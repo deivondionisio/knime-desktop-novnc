@@ -1,0 +1,23 @@
+version: "3.8"
+services:
+  knime-desktop:
+    build: .
+    container_name: knime-desktop
+    restart: unless-stopped
+    # ports:
+    #   - "6080:80"   # noVNC (web)
+    environment:
+      - RESOLUTION=${RESOLUTION}
+      - HTTP_PASSWORD=${HTTP_PASSWORD}
+      - VNC_PASSWORD=${VNC_PASSWORD}
+    volumes:
+      - knime_workspace:/home/ubuntu/KNIME-workspace
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1/ || exit 1"]
+      interval: 30s
+      timeout: 5s
+      start_period: 60s
+      retries: 10
+volumes:
+  knime_workspace:
+    driver: local
