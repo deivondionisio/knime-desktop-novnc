@@ -1,13 +1,14 @@
+#Docker Compose
+
 version: "3.8"
+
 services:
   knime-desktop:
     build: .
     container_name: knime-desktop
     restart: unless-stopped
-    # ports:
-    #   - "6080:80"   # noVNC (web)
     environment:
-      - RESOLUTION=${RESOLUTION}
+      - RESOLUTION=${RESOLUTION:-1920x1080}
       - HTTP_PASSWORD=${HTTP_PASSWORD}
       - VNC_PASSWORD=${VNC_PASSWORD}
     volumes:
@@ -18,6 +19,10 @@ services:
       timeout: 5s
       start_period: 60s
       retries: 10
+    # Para testes locais (fora do Coolify), descomente:
+    # ports:
+    #   - "6080:80"   # noVNC (web)
+
 volumes:
   knime_workspace:
     driver: local
