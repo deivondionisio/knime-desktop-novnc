@@ -5,8 +5,9 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 USER root
 
-# DependÃªncias necessÃ¡rias (inclui curl para o healthcheck)
-RUN apt-get update \
+# Remover repo do Google Chrome que quebra o apt e instalar dependências
+RUN rm -f /etc/apt/sources.list.d/google-chrome*.list \
+ && apt-get update \
  && apt-get install -y --no-install-recommends \
       wget ca-certificates xz-utils unzip curl \
       openjdk-17-jdk \
@@ -21,13 +22,13 @@ RUN wget -O /tmp/knime.tar.gz https://download.knime.org/analytics-platform/linu
  && KNIME_DIR="$(ls -d /opt/knime* | head -n1)" \
  && ln -s "${KNIME_DIR}" "${KNIME_HOME}" \
  && sed -i 's/^-Xmx.*/-Xmx4g/' "${KNIME_HOME}/knime.ini" || true \
- # Copia o Ã­cone para caminho fixo
+ # Copia o ícone para caminho fixo
  && ICON_SRC="$(find "${KNIME_HOME}/plugins" -type f -path '*org.knime.product_*/icons/knime.png' | head -n1)" \
  && [[ -n "${ICON_SRC}" ]] && cp "${ICON_SRC}" "${KNIME_HOME}/knime.png" || true
 
 ENV PATH="${KNIME_HOME}:${PATH}"
 
-# Cria o atalho .desktop em um Ãºnico RUN com heredoc de bloco
+# Cria o atalho .desktop em um único RUN com heredoc de bloco
 RUN <<'EOF' bash
 set -e
 install -d /usr/share/applications /root/Desktop
@@ -49,7 +50,7 @@ EOF
 RUN install -d -m 0755 /home/ubuntu/KNIME-workspace \
  && chown -R root:root /home/ubuntu/KNIME-workspace
 
-# ResoluÃ§Ã£o padrÃ£o do noVNC
+# Resolução padrão do noVNC
 ENV RESOLUTION=1920x1080
 
 # Porta HTTP (noVNC) do base image
