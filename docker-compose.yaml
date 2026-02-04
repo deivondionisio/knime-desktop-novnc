@@ -1,5 +1,4 @@
-#Docker Compose
-
+# docker-compose.yml (modo host)
 version: "3.8"
 
 services:
@@ -7,6 +6,7 @@ services:
     build: .
     container_name: knime-desktop
     restart: unless-stopped
+    network_mode: host
     environment:
       - RESOLUTION=${RESOLUTION:-1920x1080}
       - HTTP_PASSWORD=${HTTP_PASSWORD}
@@ -14,14 +14,11 @@ services:
     volumes:
       - knime_workspace:/home/ubuntu/KNIME-workspace
     healthcheck:
-      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1/ || exit 1"]
+      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:80/ || exit 1"]
       interval: 30s
       timeout: 5s
       start_period: 60s
       retries: 10
-    # Para testes locais (fora do Coolify), descomente:
-    # ports:
-    #   - "6080:80"   # noVNC (web)
 
 volumes:
   knime_workspace:
